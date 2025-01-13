@@ -130,10 +130,15 @@ async function run() {
    //manage plant quantity
    app.patch('/plants/quantity/:id', verifyToken, async(req, res) => {
     const id = req.params.id 
-    const {quantityToUpdate} = req.body
+    const {quantityToUpdate, status} = req.body
     const filter = {_id: new ObjectId(id)}
     let updateDoc = {
       $inc: {quantity: - quantityToUpdate}
+    }
+    if(status === 'increase'){
+      let updateDoc = {
+        $inc: {quantity: quantityToUpdate}
+      }
     }
     const result = await plantsCollection.updateOne(filter, updateDoc)
     res.send(result)
@@ -178,7 +183,7 @@ async function run() {
    })
 
    //cancel/delete an order 
-   app.delete('/order/:id', async(req, res) => {
+   app.delete('/order/:id', verifyToken, async(req, res) => {
     const id = req.params.id 
     const query = {_id: new ObjectId(id)}
     console.log(query)
